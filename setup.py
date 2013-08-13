@@ -9,7 +9,7 @@ setup(
     name = "filthy-tricks",
     version = "0.1",
     package_dir = {
-        'filthy': 'src/filthy',
+        '': 'src',
     },
     packages = [
         'filthy',
