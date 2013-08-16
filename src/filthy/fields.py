@@ -4,9 +4,10 @@ Created on 23-07-2013
 @author: kamil
 '''  
 from rest_framework.relations import PrimaryKeyRelatedField
+from rest_framework.fields import WritableField
 
 from filthy.views import TrackDependencyMixin
-
+from django.core.exceptions import ValidationError
 
 class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
     
@@ -38,3 +39,16 @@ class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
         key = tracked.__class__
         self.root.context["view"].track(key, res)
         return res
+
+class ListField(WritableField):
+    
+    def validate(self, value):
+        super(ListField, self).validate(value)
+        if not isinstance(value, list):
+            raise ValidationError("Expecting list.")
+    
+    def to_native(self, obj):
+        return obj
+
+    def from_native(self, data):
+        return data
