@@ -36,7 +36,10 @@ class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
             obj,
             field_name
         )
-        key = tracked.__class__
+        if not self.many:
+            key = tracked.__class__
+        else:
+            key = tracked.model
         self.root.context["view"].track(key, res)
         return res
 
