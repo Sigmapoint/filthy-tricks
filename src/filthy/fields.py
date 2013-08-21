@@ -55,3 +55,19 @@ class ListField(WritableField):
 
     def from_native(self, data):
         return data
+
+class TrackDependencyListField(ListField):
+    
+    def __init__(self, *args, **kwargs):
+        self.model = kwargs.pop('model', None)
+        assert self.model is not None, "TrackDependencyListField must receive `model` kwarg."
+        super(TrackDependencyListField, self).__init__(*args, **kwargs)
+        
+    def field_to_native(self, obj, field_name):
+        res = super(TrackDependencyListField, self).field_to_native(
+            obj,
+            field_name
+        )
+        key = self.model
+        self.root.context["view"].track(key, res)
+        return res
