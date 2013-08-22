@@ -131,12 +131,12 @@ class TrackDependencyMixin(object):
             for key, value in related.items():
                 model_class = key
                 related_name, serializer_class = value
-                if key in self.tracked_dependencies:
+                try:
                     qs = model_class.objects.filter(pk__in=self.tracked_dependencies[key])
                     context = self.get_serializer_context()
                     serializer = serializer_class(qs, context=context, many=True)
                     related_dict.update({related_name: serializer.data})
-                else:
+                except KeyError:
                     related_dict.update({related_name: []})
             return related_dict
     
