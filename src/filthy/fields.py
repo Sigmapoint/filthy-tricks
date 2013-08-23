@@ -36,7 +36,9 @@ class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
             obj,
             field_name
         )
-        if not self.many:
+        if self.queryset:
+            key = self.queryset.model
+        elif not self.many:
             key = tracked.__class__
         else:
             key = tracked.model

@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from filthy.exceptions import FilterValueError
+import logging
 
 class WrappedResultMixin(object):
     
@@ -136,7 +137,9 @@ class TrackDependencyMixin(object):
                     context = self.get_serializer_context()
                     serializer = serializer_class(qs, context=context, many=True)
                     related_dict.update({related_name: serializer.data})
-                except KeyError:
+                except KeyError as e:
+                    msg = "Key error when serializing related field `%s`. Maybe wrong order in `related`?"
+                    logging.getLogger(__name__).error(msg, e)
                     related_dict.update({related_name: []})
             return related_dict
     
