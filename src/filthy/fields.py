@@ -7,7 +7,7 @@ from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.fields import WritableField
 
 from filthy.views import TrackDependencyMixin
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 
 class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
     
@@ -31,18 +31,23 @@ class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
         assert isinstance(self.root.context["view"], TrackDependencyMixin)
     
     def field_to_native(self, obj, field_name):
-        tracked = getattr(obj, self.source or field_name)
+        try:
+            tracked = getattr(obj, self.source or field_name)
+            skiptrack = False
+        except ObjectDoesNotExist:
+            skiptrack = True
         res = super(TrackDependencyPrimaryKeyField, self).field_to_native(
             obj,
             field_name
         )
-        if self.queryset:
-            key = self.queryset.model
-        elif not self.many:
-            key = tracked.__class__
-        else:
-            key = tracked.model
-        self.root.context["view"].track(key, res)
+        if not skiptrack:
+            if self.queryset:
+                key = self.queryset.model
+            elif not self.many:
+                key = tracked.__class__
+            else:
+                key = tracked.model
+            self.root.context["view"].track(key, res)
         return res
 
 class ListField(WritableField):

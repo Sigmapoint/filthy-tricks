@@ -87,7 +87,7 @@ class FilterMixin(object):
                     continue
                 try:
                     search_condition = transformation(raw_condition)
-                except Exception:
+                except Exception as e:
                     msg = _(u"Failed to parse filter `{0}` parameter.")
                     raise FilterValueError(detail=msg.format(pk))
                 search_kwargs.add((target_kwarg, search_condition, negate))
