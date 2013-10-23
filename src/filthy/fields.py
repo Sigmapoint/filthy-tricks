@@ -34,7 +34,7 @@ class TrackDependencyPrimaryKeyField(PrimaryKeyRelatedField):
         try:
             tracked = getattr(obj, self.source or field_name)
             skiptrack = False
-        except ObjectDoesNotExist:
+        except (ObjectDoesNotExist, AttributeError):
             skiptrack = True
         res = super(TrackDependencyPrimaryKeyField, self).field_to_native(
             obj,
