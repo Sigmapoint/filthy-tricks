@@ -198,14 +198,14 @@ class PatchListMixin(object):
         for_create = request.DATA.get(self.__class__.create_field, None)
         for_delete = request.DATA.get(self.__class__.delete_field, None)
         if for_create:
-            success, created, errors = self.create(for_create, serializer_class)
+            success, created, errors = self.g_create(for_create, serializer_class)
             if not success:
                 data = {"detail": "Create failed. Delete skipped.", "errors": errors}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
         else:
             created = []
         if for_delete:
-            success, deleted, errors = self.destroy(for_delete, serializer_class)
+            success, deleted, errors = self.g_destroy(for_delete, serializer_class)
             if not success:
                 data = {"detail": "Create succeeded. Delete failed.", "errors": errors}
                 return Response(data=data, status=status.HTTP_400_BAD_REQUEST)
@@ -214,7 +214,7 @@ class PatchListMixin(object):
         data = {}
         return Response(data={"create": created, "delete": deleted})
     
-    def create(self, for_create, serializer_class):
+    def g_create(self, for_create, serializer_class):
         created = []
         ctx = self.get_serializer_context()
         for raw_object in for_create:
@@ -235,7 +235,7 @@ class PatchListMixin(object):
                 return (False, created, serializer.errors)
         return (True, created, None)            
     
-    def destroy(self, for_delete, serializer_class):
+    def g_destroy(self, for_delete, serializer_class):
         deleted = []
         for raw_object in for_delete:
             obj = self.get_object_for_delete(raw_object, self.__class__.identify_by)
