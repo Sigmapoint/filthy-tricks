@@ -150,7 +150,7 @@ class TrackDependencyMixin(object):
             *args,
             **kwargs
         )
-        if  200 <= response.status_code < 300:
+        if  200 <= response.status_code < 300 and response.status_code != status.HTTP_204_NO_CONTENT:
             response.data.update({"related": self.get_related()})
         return response
 
